@@ -7,9 +7,9 @@ function getStyle(pageStyleOption,callback){
 	});
 }
 
-function getBorder(pageStyleOption,callback){
+function getBorder(style,callback){
 
-	var stylePath = pageStyleOption.styleKind+"/"+pageStyleOption.style;
+	var stylePath = "style/border/"+style;
 
 	$.get("pages/"+stylePath+".html").done(function(pageStyle){
 		callback(pageStyle);

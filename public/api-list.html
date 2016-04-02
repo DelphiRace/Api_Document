@@ -1,0 +1,46 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title class="keep">API文件管理系統</title>
+		<meta class="keep" charset="utf-8" />
+		<meta class="keep" name="viewport" content="width=device-width, initial-scale=1" />
+		<link class="keep" rel="stylesheet" href="include/css/font-awesome.min.css">
+
+		<!--[if lte IE 8]><script src="include/strongly/assets/js/ie/html5shiv.js"></script><![endif]-->
+		<link class="keep" href="include/css/bootstrap.min.css" rel="stylesheet">
+        <link class="keep" rel="stylesheet" href="include/css/jquery-ui.min.css" />
+        <link class="keep" rel="stylesheet" href="include/css/ctrl-style.css" />
+
+		<!--[if lte IE 8]><link rel="stylesheet" href="../include/strongly/assets/css/ie8.css" /><![endif]-->
+		<!-- Scripts -->
+		<script class="keep" src="include/js/jquery/jquery.min.js"></script>
+        <script class="keep" src="include/js/jquery/jquery-ui.min.js"></script>
+		<script class="keep" src="include/js/bootstrap/bootstrap.min.js"></script>
+		<!--[if lte IE 8]><script class="keep" src="include/strongly/assets/js/ie/respond.min.js"></script><![endif]-->
+		<script class="keep" src="include/js/config/config.js"></script>
+		<script class="keep" src="include/js/main/main.js"></script>
+		<script class="keep" src="include/js/main/router.js"></script>
+		<script class="keep" src="include/js/main/getStyle.js"></script>
+		<script class="keep" src="include/js/main/bsDialog.js"></script>
+		<script class="keep" src="include/js/main/tab.js"></script>
+		<script class="keep" src="include/js/contentpages/home/config.js"></script>
+		<script class="keep" src="include/js/contentpages/home/main.js"></script>
+		<script class="keep" src="include/js/contentpages/home/api-list.js"></script>
+		
+	</head>
+	<body>
+		<div class="container" id="APIContentArea">
+			<div class="row">
+				<div class="col-xs-12 col-md-12 item-title text-center">
+					<h3 class="col-xs-10 col-md-11">API類別</h3>
+					<div class="col-xs-2 col-md-1 item-title-plus">
+						<i class="fa fa-plus-circle fa-2x send-btn mouse-pointer" onclick="addApiCategoryDialog();"></i>
+					</div>
+				</div>
+				<div class="col-xs-12 col-md-12 item-list-border" id="mainArea">
+					<img class="content-loading-img-in" src="include/images/loader.svg">
+				</div>
+			</div>		
+		</div>
+	</body>
+</html>

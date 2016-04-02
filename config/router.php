@@ -39,5 +39,13 @@
             echo $content;
         }
         exit();
+    }else{
+        if( $_SERVER['REQUEST_URI'] == "/"){
+            // header("Location: index.html");
+        }else{
+            header($RequestArray[0]." 404 Not Found", true, 404);
+            echo $RequestArray[0]." 404 Not Found";
+            exit();
+        }
     }
 ?>

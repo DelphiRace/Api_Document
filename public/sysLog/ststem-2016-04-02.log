@@ -1,0 +1,8 @@
+[26068] SystemCtrl\ctrlSystem --> Execute (10:41:13 142)
+Desc:
+SQL Error:delete form sys_category where uid = 3;
+------------------------------------------
+[26068] SystemCtrl\ctrlSystem --> Execute (10:41:26 142)
+Desc:
+SQL Error:delete form sys_category where uid = 3;
+------------------------------------------
