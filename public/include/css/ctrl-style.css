@@ -357,6 +357,19 @@ a:hover{
 .font-lineHeight{
 	line-height: 2.5;
 }
+
+.textarea-height-100{
+	height: 100px !important;
+}
+
+.textarea-height-200{
+	height: 200px !important;
+}
+
+.textarea-height-300{
+	height: 300px !important;
+}
+
 .bsDialogWindow {
 	width: 65%;
 }

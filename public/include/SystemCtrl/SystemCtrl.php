@@ -138,7 +138,7 @@
 				$callFunction = debug_backtrace();
 				$callFunction = $callFunction[0];
 				if(!$execut){
-					print_r('Error SQL: '.$sSqlText);
+					// print_r('Error SQL: '.$sSqlText);
 					$this->WriteLog($callFunction["class"], $callFunction["function"], "SQL Error:".$sSqlText);
 				}
 				if($this->logFileSetting){

@@ -25,7 +25,7 @@ function getApiCategoryList(){
           });
           //刪除按鈕
           $(pagListStyleObj).find(".fa-trash-o").click(function(){
-            deletDialog(content.uid, content.name, $(this));
+            deletDialog(content.uid, content.name, $(this), $("#mainArea").find(".dataContent"), CategoryApi + "deleteApiCategory");
           });
 
           $(pagListStyleObj).appendTo("#mainArea");
@@ -125,7 +125,10 @@ function addApiCategoryDialog(contentObj, modifyObj){
 }
 
 //刪除
-function deletDialog(uid, APICategoryName, deleteObj){
+function deletDialog(uid, APICategoryName, deleteObj, resetArea,apiMethod){
+  if(apiMethod == undefined){
+    return;
+  }
   $("#deletDialog").remove();
   var contentText = "確認要刪除 "+APICategoryName+" ?";
   $("<div>").prop("id","deletDialog").html(contentText).appendTo("body");
@@ -138,10 +141,10 @@ function deletDialog(uid, APICategoryName, deleteObj){
           text:"刪除",
           className: "btn-danger",
           click: function(){
-            $.post(CategoryApi + "deleteApiCategory", {uid:uid},function(rs){
-              deleteObj.parents(".list-items").parent().remove();
-              $("#mainArea").find(".dataContent").last().removeClass("list-items-bottom");
-            });
+            $.post(apiMethod, {uid:uid});
+            deleteObj.parents(".list-items").parent().remove();
+            resetArea.last().removeClass("list-items-bottom");
+            console.log(resetArea);
             $("#deletDialog").bsDialog("close");
           }
         },
@@ -178,7 +181,7 @@ function putTextForInsert(insertData){
     });
     //刪除按鈕
     $(pagListStyleObj).find(".fa-trash-o").click(function(){
-      deletDialog(insertData.uid, insertData.name, $(this));
+      deletDialog(insertData.uid, insertData.name, $(this), $("#mainArea").find(".dataContent"), CategoryApi + "deleteApiCategory");
     });
 
     $(pagListStyleObj).removeClass("list-items-bottom").appendTo("#mainArea");

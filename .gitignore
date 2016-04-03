@@ -1,0 +1,18 @@
+# Binary gettext files
+*.mo
+
+# Data
+data/logs/
+data/cache/
+data/sessions/
+data/tmp/
+temp/
+
+# Legacy ZF1
+demos/
+extras/documentation
+public/file_pdf/
+public/sysLog/
+public/include/connDB.ini
+public/old_house_pdf/
+public/example/

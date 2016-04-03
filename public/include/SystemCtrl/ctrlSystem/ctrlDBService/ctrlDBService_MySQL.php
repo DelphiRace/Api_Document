@@ -20,7 +20,7 @@
 		//ExecuteNonQuery(sSqlText)
 		public function ExecuteNonQuery($sSqlText){
 			if( !empty($sSqlText) ){
-				$stmt = $this->conn->query($sSqlText);
+				$stmt = $this->conn->multi_query($sSqlText);
 				return ($stmt)?true:false;
 			}
 		}
