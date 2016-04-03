@@ -385,3 +385,70 @@ a:hover{
     width: auto;
   }
 }
+
+.http-GET{
+	width: 75px;
+    padding: .2em .6em .3em;
+    font-weight: 700;
+    line-height: 2;
+    color: #fff;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: .25em;
+    background-color: #26A1FF;
+}
+
+.http-POST{
+	width: 75px;
+    padding: .2em .6em .3em;
+    font-weight: 700;
+    line-height: 2;
+    color: #fff;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: .25em;
+    background-color: #00C137;
+}
+
+.http-DELETE{
+	width: 75px;
+    padding: .2em .6em .3em;
+    font-weight: 700;
+    line-height: 2;
+    color: #fff;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: .25em;
+    background-color: #E94949;
+}
+
+.http-PUT{
+	width: 75px;
+    padding: .2em .6em .3em;
+    font-weight: 700;
+    line-height: 2;
+    color: #fff;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: .25em;
+    background-color: #ED9E3E;
+}
+
+.dataContent{
+	line-height: 2;
+}
+
+.hedaer-description{
+	margin-top: -12px !important;
+	margin-bottom: 25px !important;
+	padding-left: 3em;
+}
+
+.table-content td{
+	padding: 1.5em !important;
+	line-height: 2 !important;
+}

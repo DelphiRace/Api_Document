@@ -22,29 +22,42 @@ function checkGoogleApi(){
 	});
 }
 
-function firstLoadPage(){
-	if(typeof getUrlParameter("pagetype") != "undefined"){
-		loadPage(getUrlParameter("pagetype"),"pagescontent");
+function firstLoadPage(callback){
+	var page = {type:"home",listID:""};
+	if(typeof getUrlParameter("pagetype") != "undefined" && getUrlParameter("listID") != undefined){
+		page.type = getUrlParameter("pagetype");
+		page.listID = getUrlParameter("listID");
+
+		if($.trim(page.type) == ""){
+			page.type = "home";
+		}
+		if($.trim(page.listID) == ""){
+			page.listID = "";
+		}
+		loadPage(page,"pagescontent",callback);
 	}else{
-		loadPage("home","pagescontent");
+		loadPage(page,"pagescontent",callback);
 	}
 }
 
-function loadPage(page,contentID,removeHead,popstate){
+function loadPage(page,contentID, callback, removeHead, popstate){
 	if(page == "./"){
-		page = "home";
+		page = {};
+		page.type = "home";
+		page.listID = "";
 	}
 	var pageInfo = {
-		pagetype: page
+		pagetype: page.type,
+		listID: page.listID
 	};
 	var params = $.param(pageInfo);
 	if(typeof popstate == "undefined"){
 		popstate = (isPopstate)?true:false;
 	}
 	if(!popstate){
-		window.history.pushState(page,null, "content.html?"+params);
+		window.history.pushState(page.type,null, "content.html?"+params);
 	}
-	var loadPage = 'pages/'+page+'.html';
+	var loadPage = 'pages/'+page.type+'.html';
 	if(typeof removeHead == "undefined"){
 		removeHead = true;
 	}
@@ -53,7 +66,7 @@ function loadPage(page,contentID,removeHead,popstate){
     	url: loadPage, 
     	type: "GET",
     	success: function(contents){
-    		putContent( contentID, getContent(contents), removeHead);
+    		putContent( contentID, getContent(contents), callback, removeHead);
     	},
     	error: function(xhr, status, msg){
 			putContent( contentID, "此功能暫不開放" );
@@ -99,10 +112,18 @@ function getContent(rsContent,removeHead){
 	}
 }
 
-function putContent(contentID,contents){
-	$("#"+contentID).fadeOut(700,function(){
-		$(this).html(contents).fadeIn(100);
-	});
+function putContent(contentID,contents,callback){
+	if(typeof contentID != "string"){
+		contentID.fadeOut(700,function(){
+			$(this).html(contents).fadeIn(100);
+			callback();
+		});
+	}else{
+		$("#"+contentID).fadeOut(700,function(){
+			$(this).html(contents).fadeIn(100);
+			callback();
+		});
+	}
 }
 
 function loadJS(jsSrc,jsClass,dataSrc){

@@ -1,3 +1,6 @@
+// 放置類別相關物件內容，以提供刪除時同步操作
+var putAreaItem = {};
+
 $(function(){
   getApiCategoryList();
 });
@@ -25,15 +28,17 @@ function getApiCategoryList(){
           });
           //刪除按鈕
           $(pagListStyleObj).find(".fa-trash-o").click(function(){
-            deletDialog(content.uid, content.name, $(this), $("#mainArea").find(".dataContent"), CategoryApi + "deleteApiCategory");
+            deletDialog(content.uid, content.name, $(this), CategoryApi + "deleteApiCategory", true);
           });
+          // 將物件放入全域變數中，以利刪除或修改時可以同步操作
+          putAreaItem[content.uid] = {};
+          putAreaItem[content.uid].item = pagListStyleObj;
 
           $(pagListStyleObj).appendTo("#mainArea");
         });
 
         $("#mainArea").find(".dataContent").last().removeClass("list-items-bottom");
       });
-
       // 產生API類別列表
       createAPIList(rs.data);
     }else{
@@ -125,7 +130,10 @@ function addApiCategoryDialog(contentObj, modifyObj){
 }
 
 //刪除
-function deletDialog(uid, APICategoryName, deleteObj, resetArea,apiMethod){
+function deletDialog(uid, APICategoryName, deleteObj, apiMethod, isCategory){
+  if(isCategory == undefined){
+    isCategory = false;
+  }
   if(apiMethod == undefined){
     return;
   }
@@ -142,9 +150,18 @@ function deletDialog(uid, APICategoryName, deleteObj, resetArea,apiMethod){
           className: "btn-danger",
           click: function(){
             $.post(apiMethod, {uid:uid});
-            deleteObj.parents(".list-items").parent().remove();
-            resetArea.last().removeClass("list-items-bottom");
-            console.log(resetArea);
+            var tmpResetArea = deleteObj.parents(".list-items").parent();
+            resetArea = tmpResetArea.parent();
+            tmpResetArea.remove();
+            resetArea.find(".dataContent").last().removeClass("list-items-bottom");
+            if(!resetArea.find(".dataContent").length){
+              putDataEmptyInfo(resetArea.find(".dataContent"));
+            }
+            // 如果是刪除類別，則需要移除API內容
+            if(isCategory){
+              // console.log(putAreaItem);
+              $(putAreaItem[uid].area).remove();
+            }
             $("#deletDialog").bsDialog("close");
           }
         },
@@ -181,11 +198,16 @@ function putTextForInsert(insertData){
     });
     //刪除按鈕
     $(pagListStyleObj).find(".fa-trash-o").click(function(){
-      deletDialog(insertData.uid, insertData.name, $(this), $("#mainArea").find(".dataContent"), CategoryApi + "deleteApiCategory");
+      deletDialog(insertData.uid, insertData.name, $(this), CategoryApi + "deleteApiCategory", true);
     });
+    
+    // 將物件放入全域變數中，以利刪除或修改時可以同步操作
+    putAreaItem[insertData.uid] = {};
+    putAreaItem[insertData.uid].item = pagListStyleObj;
 
     $(pagListStyleObj).removeClass("list-items-bottom").appendTo("#mainArea");
-    
+
+    putAPIContentArea(insertData);
   });
 }
 
@@ -196,3 +218,34 @@ function putTextForModify(inptObj, modifyObj, modifyData){
   });
 }
 
+// 新增分類後，動態放入類別內容新增區域
+function putAPIContentArea(insertData){
+  // 取得外框資料
+  getBorder("list-TitlePlus-left", function(borderStyle){
+    var borderStyleObj = $.parseHTML(borderStyle);
+    $(borderStyleObj).addClass("apiContent");
+
+    // 加入新增事件
+    $(borderStyleObj).find(".fa-plus-circle").click(function(){
+      // 新增函式
+      insertAPIContentDialog(insertData, undefined, $(this).parents(".row").find(".item-list-border"));
+    });
+    // console.log(content);
+    // 放入Title
+    $(borderStyleObj).find("h3").eq(0).html(insertData.name);
+    
+    putDataEmptyInfo( $(borderStyleObj).find(".item-list-border") );
+
+    // 放到區域中
+    if( $(".apiContent").length ){
+      $(".apiContent").last().after(borderStyleObj);
+    }else{
+      $("#APIContentArea").after(borderStyleObj);
+    }
+
+    // 將物件放入全域變數中，以利刪除或修改時可以同步操作
+    putAreaItem[insertData.uid].area = borderStyleObj;
+    // console.log(putAreaItem);
+
+  });
+}

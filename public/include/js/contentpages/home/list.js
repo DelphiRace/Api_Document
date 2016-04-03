@@ -1,0 +1,112 @@
+$(function(){
+	getListContent();
+});
+
+function getListContent(){
+	$.getJSON(CategoryApi + "GetList").done(function(rs){
+		if(rs.status){
+			createAPIList(rs.data);
+		}else{
+			putDataEmptyInfo( $("#mainListArea") );
+		}
+	});
+}
+function createAPIList(apiData){
+	$.getJSON(listApi + "GetList", function(rs){
+		if(rs.status){
+			// 整理資料
+			var data = processListData(rs.data);
+		
+			getBorder("table",function(tableStyle){
+				var option = {styleKind:"table",style:"3grid"};
+				getStyle(option,function(grid2Style){
+					$.each(apiData,function(index,content){
+						var titleDiv = $("<div>").addClass("hero-unit");
+						$("<h3>").addClass("page-header").text(content.name).appendTo(titleDiv);
+						$("<p>").addClass("hedaer-description").text(content.description).appendTo(titleDiv);
+						
+
+						var tableStyleObj = $.parseHTML(tableStyle);
+						$(tableStyleObj).find("thead").remove();
+
+						if(data[content.uid] != undefined){
+							titleDiv.appendTo("#mainListArea");
+
+							$.each(data[content.uid], function(dataIndex, dataContent){
+								// console.log(dataContent);
+								var grid2StyleObj = $.parseHTML(grid2Style);
+								$(grid2StyleObj).addClass("table-content");
+								var apiURLText = $("<a>").prop("href","#").html(dataContent.name).click(function(){
+									// 預覽
+									viewDialog(dataContent);
+									return false;
+								});
+								var httpMethod = $("<div>").addClass("http-"+dataContent.httpMethodName).text(dataContent.httpMethodName);
+								$(grid2StyleObj).find("td").eq(0).html(apiURLText);
+								$(grid2StyleObj).find("td").eq(1).html(httpMethod);
+								$(grid2StyleObj).find("td").eq(2).html(dataContent.description);
+								$(grid2StyleObj).appendTo(tableStyleObj);
+							});
+
+							$(tableStyleObj).appendTo("#mainListArea");
+						}
+						
+					});
+				});				
+			});
+		}else{
+			putDataEmptyInfo( $("#mainListArea") );
+		}
+	});
+}
+
+// 整理列表資料
+function processListData(data){
+	var tmpData = {};
+	$.each(data,function(index, content){
+		var tmpObj;
+		if(tmpData[content.category] == undefined){
+			tmpData[content.category] = [];
+		}
+		tmpObj = content;
+		tmpData[content.category].push(tmpObj);
+	});
+	return tmpData;
+}
+
+
+// 預覽
+function viewDialog(data){
+    $("#viewDialog").remove();
+
+    $("<div>").prop("id","viewDialog").appendTo("body");
+
+    $("#viewDialog").bsDialog({
+        autoShow:true,
+        showFooterBtn: false,
+        modalClass: "bsDialogWindow",
+        start: function(){
+        	var contentArea = $("#viewDialog").find(".modal-body");
+			var str = '<img src="include/images/loader.svg" width="64">';
+			contentArea.empty();
+			var centerArea = $("<div>").addClass("text-center");
+			$(str).appendTo(centerArea);
+			centerArea.appendTo(contentArea);
+
+			var loadPage = "view.html";
+          	$.ajax({
+		    	url: loadPage, 
+		    	type: "GET",
+		    	success: function(contents){
+		    		putContent( contentArea, contents, function(){
+		    			getPageContentByData(data);
+		    		});
+		    	},
+		    	error: function(xhr, status, msg){
+					putContent( contentArea, "此功能暫不開放" );
+		    	}
+			});
+        },        
+    });
+}
+

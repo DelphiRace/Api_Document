@@ -12,9 +12,16 @@ class apiListController
         $SysClass = new ctrlSystem;
         $SysClass->initialization("",true);
         try{
+            $listCondition = "";
+            if(!empty($_GET["listID"])){
+                $listCondition = "and t1.uid = ".$_GET["listID"];
+            }
             $strSQL = "select t1.*,
-            t3.api_sf, 
-            t7.content as importantInfo, 
+            t3.api_sf,
+            t8.name as api_sf_name,  
+            t7.content as importantInfo,
+            t2.name as httpMethodName,
+            t5.response_content,
             t4.uid as responseExplanationUID, t4.name as responseExplanationKey, t4.type as responseExplanationType, t4.description as responseExplanationDescription, 
             t6.uid as parameterUID, t6.name as parameterKey, t6.type as parameterType, t6.description as parameterDescription, t6.required as parameterRequired, 
             t5.response_content, t5.original from api_method t1 ";
@@ -32,6 +39,10 @@ class apiListController
             $strSQL .= "left join ls_important_info t7 on t1.uid = t7.api_uid ";
             //api 支援格式
             $strSQL .= "left join api_support_format t8 on t3.api_sf = t8.uid ";
+            //條件
+            $strSQL .= "where 1 ";
+            // 指定單筆
+            $strSQL .= $listCondition;
             $data = $SysClass->QueryData($strSQL);
 
             $action = [];
@@ -47,6 +58,9 @@ class apiListController
                     if(empty($tmpArr[$content['uid']])){
                         $tmpArr[$content['uid']] = [];
                         $tmpArr[$content['uid']]['api_sf'] = $content['api_sf'];
+                        $tmpArr[$content['uid']]['api_sf_name'] = $content['api_sf_name'];
+                        $tmpArr[$content['uid']]['httpMethodName'] = $content['httpMethodName'];
+                        $tmpArr[$content['uid']]['response_content'] = $content['response_content'];
                         $tmpArr[$content['uid']]['category'] = $content['category'];
                         $tmpArr[$content['uid']]['description'] = $content['description'];
                         $tmpArr[$content['uid']]['http_method'] = $content['http_method'];
@@ -182,16 +196,32 @@ class apiListController
                 if(!empty($_POST["ls_parameter"])){
                     //新增狀態
                     $lsParameterStatus = false;
-                    foreach ($_POST["ls_parameter"] as $content) {
-                        if(!empty($content['name']) and !empty($content['type']) and !empty($content['description'])){
+                    if(count($_POST["ls_parameter"]) == 1){
+                        if(!empty($_POST["ls_parameter"][0]['name']) and !empty($_POST["ls_parameter"][0]['type']) and !empty($_POST["ls_parameter"][0]['description'])){
                             $strSQL = "insert into ls_parameter(api_uid,name,type,description,required) ";
-                            $strSQL .= "values(".$NewID.",'".$content['name']."','".$content['type']."','".$content['description']."',".$content['required'].");";
+                            $strSQL .= "values(".$NewID.",'".$_POST["ls_parameter"][0]['name']."','".$_POST["ls_parameter"][0]['type']."','".$_POST["ls_parameter"][0]['description']."',".$_POST["ls_parameter"][0]['required'].");";
 
                             if(!$SysClass->Execute($strSQL)){
                                 $SysClass->Rollback();
                                 $lsParameterStatus = false;
                             }else{
                                 $lsParameterStatus = true;
+                            }
+                        }else{
+                            $lsParameterStatus = true;
+                        }
+                    }else{
+                        foreach ($_POST["ls_parameter"] as $content) {
+                            if(!empty($content['name']) and !empty($content['type']) and !empty($content['description'])){
+                                $strSQL = "insert into ls_parameter(api_uid,name,type,description,required) ";
+                                $strSQL .= "values(".$NewID.",'".$content['name']."','".$content['type']."','".$content['description']."',".$content['required'].");";
+
+                                if(!$SysClass->Execute($strSQL)){
+                                    $SysClass->Rollback();
+                                    $lsParameterStatus = false;
+                                }else{
+                                    $lsParameterStatus = true;
+                                }
                             }
                         }
                     }
@@ -203,10 +233,10 @@ class apiListController
                 if( !empty($_POST["ls_response_explanation"]) and !empty($_POST["ls_response_example_response_content"]) ){
                     //新增狀態
                     $lsResponseExplanationStatus = false;
-                    foreach ($_POST["ls_response_explanation"] as $content) {
-                        if(!empty($content['name']) and !empty($content['type']) and !empty($content['description'])){
+                     if(count($_POST["ls_response_explanation"]) == 1){
+                        if(!empty($_POST["ls_response_explanation"][0]['name']) and !empty($_POST["ls_response_explanation"][0]['type']) and !empty($_POST["ls_response_explanation"][0]['description'])){
                             $strSQL = "insert into ls_response_explanation(api_uid,name,type,description) ";
-                            $strSQL .= "values(".$NewID.",'".$content['name']."','".$content['type']."','".$content['description']."');";
+                            $strSQL .= "values(".$NewID.",'".$_POST["ls_response_explanation"][0]['name']."','".$_POST["ls_response_explanation"][0]['type']."','".$_POST["ls_response_explanation"][0]['description']."';";
 
                             if(!$SysClass->Execute($strSQL)){
                                 $SysClass->Rollback();
@@ -214,7 +244,23 @@ class apiListController
                             }else{
                                 $lsResponseExplanationStatus = true;
                             }
+                        }else{
+                            $lsResponseExplanationStatus = true;
+                        }
+                    }else{
+                        foreach ($_POST["ls_response_explanation"] as $content) {
+                            if(!empty($content['name']) and !empty($content['type']) and !empty($content['description'])){
+                                $strSQL = "insert into ls_response_explanation(api_uid,name,type,description) ";
+                                $strSQL .= "values(".$NewID.",'".$content['name']."','".$content['type']."','".$content['description']."');";
 
+                                if(!$SysClass->Execute($strSQL)){
+                                    $SysClass->Rollback();
+                                    $lsResponseExplanationStatus = false;
+                                }else{
+                                    $lsResponseExplanationStatus = true;
+                                }
+
+                            }
                         }
                     }
                 }else{
@@ -330,20 +376,43 @@ class apiListController
                 if(!empty($_POST["ls_parameter"])){
                     //新增狀態
                     $lsParameterStatus = false;
-                    // 先刪掉全部在新增
-                    $strSQL = "delete from ls_parameter where api_uid = ".$api_uid;
-                    if(!$SysClass->Execute($strSQL)){
-                        $SysClass->Rollback();
-                    }
-                    foreach ($_POST["ls_parameter"] as $content) {
-                        if(!empty($content['name']) and !empty($content['type']) and !empty($content['description'])){
-                            $strSQL = "insert into ls_parameter(api_uid,name,type,description,required) ";
-                            $strSQL .= "values(".$api_uid.",'".$content['name']."','".$content['type']."','".$content['description']."',".$content['required'].");";
+                    if(count($_POST["ls_parameter"]) == 1){
 
+                        if(!empty($_POST["ls_parameter"][0]['name']) and !empty($_POST["ls_parameter"][0]['type']) and !empty($_POST["ls_parameter"][0]['description'])){
+
+                            // 先刪掉全部在新增
+                            $strSQL = "delete from ls_parameter where api_uid = ".$api_uid;
+                            if(!$SysClass->Execute($strSQL)){
+                                $SysClass->Rollback();
+                            }
+
+                            $strSQL = "insert into ls_parameter(api_uid,name,type,description,required) ";
+                            $strSQL .= "values(".$api_uid.",'".$_POST["ls_parameter"][0]['name']."','".$_POST["ls_parameter"][0]['type']."','".$_POST["ls_parameter"][0]['description']."',".$_POST["ls_parameter"][0]['required'].");";
                             if(!$SysClass->Execute($strSQL)){
                                 $SysClass->Rollback();
                             }else{
                                 $lsParameterStatus = true;
+                            }
+                        }else{
+                            $lsParameterStatus = true;
+                        }
+                    }else{
+                        // 先刪掉全部在新增
+                        $strSQL = "delete from ls_parameter where api_uid = ".$api_uid;
+                        if(!$SysClass->Execute($strSQL)){
+                            $SysClass->Rollback();
+                        }
+
+                        foreach ($_POST["ls_parameter"] as $content) {
+                            if(!empty($content['name']) and !empty($content['type']) and !empty($content['description'])){
+                                $strSQL = "insert into ls_parameter(api_uid,name,type,description,required) ";
+                                $strSQL .= "values(".$api_uid.",'".$content['name']."','".$content['type']."','".$content['description']."',".$content['required'].");";
+
+                                if(!$SysClass->Execute($strSQL)){
+                                    $SysClass->Rollback();
+                                }else{
+                                    $lsParameterStatus = true;
+                                }
                             }
                         }
                     }
@@ -355,23 +424,45 @@ class apiListController
                 if( !empty($_POST["ls_response_explanation"]) and !empty($_POST["ls_response_example_response_content"]) ){
                     //新增狀態
                     $lsResponseExplanationStatus = false;
-                    // 先刪掉全部在新增
-                    $strSQL = "delete from ls_response_explanation where api_uid = ".$api_uid;
-                    if(!$SysClass->Execute($strSQL)){
-                        $SysClass->Rollback();
-                    }
+                    if(count($_POST["ls_response_explanation"]) == 1){
 
-                    foreach ($_POST["ls_response_explanation"] as $content) {
-                        if(!empty($content['name']) and !empty($content['type']) and !empty($content['description'])){
+                        if(!empty($_POST["ls_response_explanation"][0]['name']) and !empty($_POST["ls_response_explanation"][0]['type']) and !empty($_POST["ls_response_explanation"][0]['description'])){
+
+                            // 先刪掉全部在新增
+                            $strSQL = "delete from ls_response_explanation where api_uid = ".$api_uid;
+                            if(!$SysClass->Execute($strSQL)){
+                                $SysClass->Rollback();
+                            }
+
                             $strSQL = "insert into ls_response_explanation(api_uid,name,type,description) ";
-                            $strSQL .= "values(".$api_uid.",'".$content['name']."','".$content['type']."','".$content['description']."');";
-
+                            $strSQL .= "values(".$api_uid.",'".$_POST["ls_response_explanation"][0]['name']."','".$_POST["ls_response_explanation"][0]['type']."','".$_POST["ls_response_explanation"][0]['description']."');";
                             if(!$SysClass->Execute($strSQL)){
                                 $SysClass->Rollback();
                             }else{
                                 $lsResponseExplanationStatus = true;
                             }
+                        }else{
+                            $lsResponseExplanationStatus = true;
+                        }
+                    }else{
+                        // 先刪掉全部在新增
+                        $strSQL = "delete from ls_response_explanation where api_uid = ".$api_uid;
+                        if(!$SysClass->Execute($strSQL)){
+                            $SysClass->Rollback();
+                        }
 
+                        foreach ($_POST["ls_response_explanation"] as $content) {
+                            if(!empty($content['name']) and !empty($content['type']) and !empty($content['description'])){
+                                $strSQL = "insert into ls_response_explanation(api_uid,name,type,description) ";
+                                $strSQL .= "values(".$api_uid.",'".$content['name']."','".$content['type']."','".$content['description']."');";
+
+                                if(!$SysClass->Execute($strSQL)){
+                                    $SysClass->Rollback();
+                                }else{
+                                    $lsResponseExplanationStatus = true;
+                                }
+
+                            }
                         }
                     }
                 }else{

@@ -10,9 +10,9 @@ function createAPIList(apiData){
 			// console.log(data);
 		}
 		// 取得外框資料
-		getBorder("list-TitlePlus", function(borderStyle){
+		getBorder("list-TitlePlus-left", function(borderStyle){
 			// 取得內欄資料
-			var option = {styleKind:"list",style:"2grid-modify"};
+			var option = {styleKind:"list",style:"3grid-modify"};
 			getStyle(option, function(listStyle){
 				// APIContentArea
 				$.each(apiData,function(index, content){
@@ -31,30 +31,38 @@ function createAPIList(apiData){
 					if(rs.status){
 						if(data[content.uid] != undefined){
 							$.each(data[content.uid], function(dataIndex, dataContent){
+								// console.log(dataContent);
 								var listStyleObj = $.parseHTML(listStyle);
 
 								$(listStyleObj).addClass("dataContent");
 								//放入方法名稱
 								$(listStyleObj).find(".list-items").eq(0).text(dataContent.name);
+								// 放入請求方法
+								var httpMethod = $("<div>").addClass("http-"+dataContent.httpMethodName).html(dataContent.httpMethodName);
+								$(listStyleObj).find(".list-items").eq(1).html(httpMethod);
+
 								// 放入方法說明
-								$(listStyleObj).find(".list-items").eq(1).text(dataContent.description);
+								$(listStyleObj).find(".list-items").eq(2).text(dataContent.description);
 
 								// 修改按鈕
 								$(listStyleObj).find(".fa-pencil-square-o").click(function(){
 									var resetObj = {
 										name: $(listStyleObj).find(".list-items").eq(0),
-										description: $(listStyleObj).find(".list-items").eq(1),
+										description: $(listStyleObj).find(".list-items").eq(2),
+										httpMethod: $(listStyleObj).find(".list-items").eq(1),
 										clickBtn: $(this)
 									}
 									insertAPIContentDialog(content, dataContent, resetObj);
 								});
 								// 刪除按鈕
 								$(listStyleObj).find(".fa-trash-o").click(function(){
-									deletDialog(dataContent.uid, dataContent.name, $(this), $(borderStyleObj).find(".dataContent"), listApi + "deleteApiList");
+									deletDialog(dataContent.uid, dataContent.name, $(this), listApi + "deleteApiList");
 								});
 
 								$(listStyleObj).appendTo($(borderStyleObj).find(".item-list-border"));
 							});
+							
+
 							$(borderStyleObj).find(".list-items-bottom").last().removeClass("list-items-bottom");
 						}else{
 							putDataEmptyInfo( $(borderStyleObj).find(".item-list-border") );
@@ -68,8 +76,10 @@ function createAPIList(apiData){
 					}else{
 						$("#APIContentArea").after(borderStyleObj);
 					}
-
+					// 將物件放入全域變數中，以利刪除或修改時可以同步操作
+					putAreaItem[content.uid].area = borderStyleObj;
 				});
+				
 			});
 		});
 	})
@@ -222,13 +232,18 @@ function insertAPIContentDialog(apiCategoryObj, contentObj, resetObj){
               sendObj.ls_parameter = parameter[0];
               sendObj.ls_response_explanation = parameter[1];
               // console.log(sendObj);
+              // 放入請求方法
+              sendObj['httpMethod'] = $("[name=api_method_http_method]:checked").parent().find(".label-description").text();
 
               var apiMethod = (contentObj == undefined) ? "insertApiList":"modifyApiList";
+
               $.post(listApi + apiMethod, sendObj, function(rs){
+              	rs = $.parseJSON(rs);
               	var modifyData = restSendDataObj(sendObj);
-                rs = $.parseJSON(rs);
                 //新增
                 if(contentObj == undefined){
+                	modifyData.uid = rs.data.uid;
+                	resetObj.find(".date-empty").remove();
                 	putAPIListTextForInsert(apiCategoryObj, modifyData, resetObj);
                 }else{
               	 
@@ -240,7 +255,9 @@ function insertAPIContentDialog(apiCategoryObj, contentObj, resetObj){
                   });
 
                 }
-                console.log(rs);
+                // console.log(sendObj);
+                // console.log(contentObj);
+                // console.log(rs);
               });
               $("#insertAPIContentDialog").bsDialog("close");
             }
@@ -457,6 +474,7 @@ function getInsertAreaInfo(){
 
 // 處理新增後的資料物件
 function restSendDataObj(sendObj){
+	console.log(sendObj);
 	var tmpObj = {};
 	tmpObj.api_sf = sendObj.ls_support_format_api_sf;
 	tmpObj.category = sendObj.api_method_Category;
@@ -469,6 +487,7 @@ function restSendDataObj(sendObj){
 	tmpObj.responseExplanation = sendObj.ls_response_explanation;
 	tmpObj.uid = sendObj.api_method_UID;
 	tmpObj.url = sendObj.api_method_url;
+	tmpObj.httpMethod = sendObj.httpMethod;
 	return tmpObj;
 }
 
@@ -476,35 +495,45 @@ function restSendDataObj(sendObj){
 function putAPIListTextForInsert(apiCategoryObj, insertData, insertArea){
 	insertArea.find(".dataContent").last().addClass("list-items-bottom");
 
-	var option = {styleKind:"list",style:"2grid-modify"}
+	var option = {styleKind:"list",style:"3grid-modify"}
 		getStyle(option, function(pagListStyle){
 		var pagListStyleObj = $.parseHTML(pagListStyle);
 
 		$(pagListStyleObj).find(".list-items").eq(0).html(insertData.name);
-		$(pagListStyleObj).find(".list-items").eq(1).html(insertData.description);
+		// 放入請求方法
+		var httpMethod = $("<div>").addClass("http-"+insertData.httpMethod).html(insertData.httpMethod);
+		$(pagListStyleObj).find(".list-items").eq(1).html(httpMethod);
+		$(pagListStyleObj).find(".list-items").eq(2).html(insertData.description);
 
 		//修改按鈕
 		$(pagListStyleObj).find(".fa-pencil-square-o").click(function(){
 		  var modifyObj = {
 		    name: $(pagListStyleObj).find(".list-items").eq(0),
-		    description: $(pagListStyleObj).find(".list-items").eq(1),
+		    description: $(pagListStyleObj).find(".list-items").eq(2),
+		    httpMethod: $(pagListStyleObj).find(".list-items").eq(1),
 		    clickBtn: $(this)
 		  }
 		  insertAPIContentDialog(apiCategoryObj, insertData, modifyObj);
 		});
 		//刪除按鈕
 		$(pagListStyleObj).find(".fa-trash-o").click(function(){
-		  deletDialog(insertData.uid, insertData.name, $(this), insertArea, listApi + "deleteApiList");
+		  deletDialog(insertData.uid, insertData.name, $(this), listApi + "deleteApiList");
 		});
 
-		$(pagListStyleObj).removeClass("list-items-bottom").appendTo(insertArea);
+		$(pagListStyleObj).addClass("dataContent").removeClass("list-items-bottom").appendTo(insertArea);
 
 	});
 }
 
 //修改後，依據修改資料放入對應欄位
 function putAPIListTextForModify(modifyObj, modifyData){
+	console.log(modifyData);
   $.each(modifyObj, function(index, content){
-    content.text(modifyData[index]);
+  	if(index == "httpMethod"){
+  		var httpMethod = $("<div>").addClass("http-"+modifyData[index]).text(modifyData[index]);
+  		content.empty().html(httpMethod);
+  	}else{
+    	content.text(modifyData[index]);
+	}
   });
 }
