@@ -452,3 +452,30 @@ a:hover{
 	padding: 1.5em !important;
 	line-height: 2 !important;
 }
+
+.categoryTag{
+	display: inline-block;
+	width: 75px;
+	height: 35px;
+    padding: .2em .6em .3em;
+    font-weight: 700;
+    line-height: 2;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: .25em;
+    border: 1px solid #ddd;
+    margin: .5em;
+}
+
+#gotop {
+    display: none;
+    position: fixed;
+    right: 20px;
+    bottom: 20px;    
+    padding: 10px 15px;    
+    font-size: 20px;
+    background: #777;
+    color: white;
+    cursor: pointer;
+}

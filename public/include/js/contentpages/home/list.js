@@ -1,11 +1,46 @@
+var putAreaItem = {};
 $(function(){
 	getListContent();
+	$("#gotop").click(function(){
+        $("html,body").animate({
+            scrollTop:0
+        },800);
+    });
+    $(window).scroll(function() {
+        if ( $(this).scrollTop() > 100){
+            $('#gotop').fadeIn("fast");
+        } else {
+            $('#gotop').stop().fadeOut("fast");
+        }
+    });
 });
 
 function getListContent(){
 	$.getJSON(CategoryApi + "GetList").done(function(rs){
 		if(rs.status){
+			var titleDiv = $("<div>").addClass("hero-unit");
+			$("<h3>").addClass("page-header").text("API類別").appendTo(titleDiv);
+			titleDiv.appendTo("#mainListArea");
+			var categoryDiv = $("<div>");
+			$.each(rs.data,function(index,content){
+				var categoryContent = $("<div>").addClass("categoryTag mouse-pointer").html(content.name);
+				categoryContent.click(function(){
+					var scrollTop = $(putAreaItem[content.uid]).offset().top;
+					$('html,body').animate({
+						scrollTop: scrollTop
+					}, 800);
+
+				});
+				if(!categoryDiv.find("div").length){
+					categoryDiv.append(categoryContent);
+				}else{
+					categoryDiv.find("div").last().after(categoryContent);
+				}
+
+			});
+			categoryDiv.appendTo("#mainListArea");
 			createAPIList(rs.data);
+
 		}else{
 			putDataEmptyInfo( $("#mainListArea") );
 		}
@@ -25,6 +60,7 @@ function createAPIList(apiData){
 						$("<h3>").addClass("page-header").text(content.name).appendTo(titleDiv);
 						$("<p>").addClass("hedaer-description").text(content.description).appendTo(titleDiv);
 						
+						putAreaItem[content.uid] = titleDiv;
 
 						var tableStyleObj = $.parseHTML(tableStyle);
 						$(tableStyleObj).find("thead").remove();

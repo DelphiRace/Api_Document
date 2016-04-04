@@ -1,70 +1,81 @@
-<div class="container">
-	<div class="row" id="pagescontent">
-		<!-- 內容 -->
-		<!-- API標題 -->
-		<div class="hero-unit">
-			<h3 id="name" class="page-header">API Title</h3>
-			<p id="description">content</p>
-		</div>
-		<!-- URL -->
-		<div class="hero-unit">
-			<h3 class="page-header">URL</h3>
-			<p id="url">content</p>
-		</div>
-		<!-- Http 請求方法 -->
-		<div class="hero-unit">
-			<h3 class="page-header">HTTP請求方法</h3>
-			<p id="httpMethodName">content</p>
-		</div>
-		<!-- 傳送支援的格式 -->
-		<div class="hero-unit">
-			<h3 class="page-header">傳送支援格式</h3>
-			<p id="api_sf_name">content</p>
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title class="keep">API內容</title>
+		<meta class="keep" charset="utf-8" />
+		<meta class="keep" name="viewport" content="width=device-width, initial-scale=1" />		
+	</head>
+	<body>
+		<div class="container">
+			<div class="row" id="pagescontent">
+				<!-- 內容 -->
+				<!-- API標題 -->
+				<div class="hero-unit">
+					<h3 id="name" class="page-header">API Title</h3>
+					<p id="description">content</p>
+				</div>
+				<!-- URL -->
+				<div class="hero-unit">
+					<h3 class="page-header">URL</h3>
+					<p id="url">content</p>
+				</div>
+				<!-- Http 請求方法 -->
+				<div class="hero-unit">
+					<h3 class="page-header">HTTP請求方法</h3>
+					<p id="httpMethodName">content</p>
+				</div>
+				<!-- 傳送支援的格式 -->
+				<div class="hero-unit">
+					<h3 class="page-header">傳送支援格式</h3>
+					<p id="api_sf_name">content</p>
+				</div>
+
+				<!-- 請求參數 -->
+				<div class="hero-unit">
+					<h3 class="page-header">請求參數</h3>
+					<table class="table table-striped" id="parameterArea">
+						<thead>
+							<tr>
+								<th>參數名稱</th>
+								<th>必要</th>
+								<th>類型/範圍</th>
+								<th>說明</th>
+							</tr>
+						</thead>
+						<tbody>
+						</tbody>
+						</table>
+				</div>
+
+				<!-- 應注意事項 -->
+				<div class="hero-unit">
+					<h3 class="page-header">應注意事項</h3>
+					<p id="importantInfo"></p>
+				</div>
+
+				<!-- 回傳範例 -->
+				<div class="hero-unit">
+					<h3 class="page-header">回傳範例</h3>
+					<div id="response_content"></div>
+				</div>
+
+				<!-- 回傳值說明 -->
+				<div class="hero-unit">
+					<h3 class="page-header">回傳值說明</h3>
+					<table class="table table-striped" id="responseExplanationArea">
+						<thead>
+							<tr>
+								<th>索引值</th>
+								<th>類型</th>
+								<th>說明</th>
+							</tr>
+						</thead>
+						<tbody>
+						</tbody>
+					</table>
+				</div>	
+			</div>
 		</div>
 
-		<!-- 請求參數 -->
-		<div class="hero-unit">
-			<h3 class="page-header">請求參數</h3>
-			<table class="table table-striped" id="parameterArea">
-				<thead>
-					<tr>
-						<th>參數名稱</th>
-						<th>必要</th>
-						<th>類型/範圍</th>
-						<th>說明</th>
-					</tr>
-				</thead>
-				<tbody>
-				</tbody>
-				</table>
-		</div>
-
-		<!-- 應注意事項 -->
-		<div class="hero-unit">
-			<h3 class="page-header">應注意事項</h3>
-			<p id="importantInfo"></p>
-		</div>
-
-		<!-- 回傳範例 -->
-		<div class="hero-unit">
-			<h3 class="page-header">回傳範例</h3>
-			<div id="response_content"></div>
-		</div>
-
-		<!-- 回傳值說明 -->
-		<div class="hero-unit">
-			<h3 class="page-header">回傳值說明</h3>
-			<table class="table table-striped" id="responseExplanationArea">
-				<thead>
-					<tr>
-						<th>索引值</th>
-						<th>類型</th>
-						<th>說明</th>
-					</tr>
-				</thead>
-				<tbody>
-				</tbody>
-			</table>
-		</div>	
-	</div>
-</div>
+	</body>
+</html>

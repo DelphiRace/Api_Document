@@ -3,6 +3,18 @@ var putAreaItem = {};
 
 $(function(){
   getApiCategoryList();
+  $("#gotop").click(function(){
+      $("html,body").animate({
+          scrollTop:0
+      },800);
+  });
+  $(window).scroll(function() {
+      if ( $(this).scrollTop() > 100){
+          $('#gotop').fadeIn("fast");
+      } else {
+          $('#gotop').stop().fadeOut("fast");
+      }
+  });
 });
 
 function getApiCategoryList(){
@@ -14,9 +26,15 @@ function getApiCategoryList(){
         $.each(rs.data, function(index,content){
           var pagListStyleObj = $.parseHTML(pagListStyle);
           $(pagListStyleObj).addClass("dataContent");
-          $(pagListStyleObj).find(".list-items").eq(0).html(content.name);
+          // 製作錨點動畫
+          var CategoryLink = $("<a>").prop("href","#").text(content.name).click(function(){
+            var scrollTop = $(putAreaItem[content.uid].area).offset().top;
+            $('html,body').animate({
+              scrollTop: scrollTop
+            }, 800);
+          });
+          $(pagListStyleObj).find(".list-items").eq(0).html(CategoryLink);
           $(pagListStyleObj).find(".list-items").eq(1).html(content.description);
-
           //修改按鈕
           $(pagListStyleObj).find(".fa-pencil-square-o").click(function(){
             var modifyObj = {
