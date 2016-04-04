@@ -80,7 +80,7 @@ function getPageContentByData(data){
 							var grid4StyleObj = $.parseHTML(grid4Style);
 							var required = (tableVal.required == "1") ? "true":"false";
 
-							$(grid4StyleObj).find("td").eq(0).html(tableVal.key);
+							$(grid4StyleObj).find("td").eq(0).html(tableVal.name);
 							$(grid4StyleObj).find("td").eq(1).html(required);
 							$(grid4StyleObj).find("td").eq(2).html(tableVal.type);
 							$(grid4StyleObj).find("td").eq(3).html(tableVal.description);
@@ -89,7 +89,7 @@ function getPageContentByData(data){
 						}else if(index == "responseExplanation"){//3格
 							var grid3StyleObj = $.parseHTML(grid3Style);
 
-							$(grid3StyleObj).find("td").eq(0).html(tableVal.key);
+							$(grid3StyleObj).find("td").eq(0).html(tableVal.name);
 							$(grid3StyleObj).find("td").eq(1).html(tableVal.type);
 							$(grid3StyleObj).find("td").eq(2).html(tableVal.description);
 

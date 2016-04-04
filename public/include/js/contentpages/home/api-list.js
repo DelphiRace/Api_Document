@@ -35,8 +35,13 @@ function createAPIList(apiData){
 								var listStyleObj = $.parseHTML(listStyle);
 
 								$(listStyleObj).addClass("dataContent");
+								var apiURLText = $("<a>").prop("href","#").html(dataContent.name).click(function(){
+									// 預覽
+									viewDialog(dataContent);
+									return false;
+								});
 								//放入方法名稱
-								$(listStyleObj).find(".list-items").eq(0).text(dataContent.name);
+								$(listStyleObj).find(".list-items").eq(0).html(apiURLText);
 								// 放入請求方法
 								var httpMethod = $("<div>").addClass("http-"+dataContent.httpMethodName).html(dataContent.httpMethodName);
 								$(listStyleObj).find(".list-items").eq(1).html(httpMethod);
@@ -49,7 +54,7 @@ function createAPIList(apiData){
 									var resetObj = {
 										name: $(listStyleObj).find(".list-items").eq(0),
 										description: $(listStyleObj).find(".list-items").eq(2),
-										httpMethod: $(listStyleObj).find(".list-items").eq(1),
+										httpMethodName: $(listStyleObj).find(".list-items").eq(1),
 										clickBtn: $(this)
 									}
 									insertAPIContentDialog(content, dataContent, resetObj);
@@ -234,7 +239,8 @@ function insertAPIContentDialog(apiCategoryObj, contentObj, resetObj){
               sendObj.ls_response_explanation = parameter[1];
               // console.log(sendObj);
               // 放入請求方法
-              sendObj['httpMethod'] = $("[name=api_method_http_method]:checked").parent().find(".label-description").text();
+              sendObj['httpMethodName'] = $("[name=api_method_http_method]:checked").parent().find(".label-description").text();
+              sendObj['api_sf_name'] = $("[name=ls_support_format_api_sf]:checked").parent().find(".label-description").text();
 
               var apiMethod = (contentObj == undefined) ? "insertApiList":"modifyApiList";
 
@@ -249,7 +255,7 @@ function insertAPIContentDialog(apiCategoryObj, contentObj, resetObj){
                 }else{
               	 
                   // 修改後畫面上跟著動
-              	 putAPIListTextForModify(resetObj, modifyData);
+              	 	putAPIListTextForModify(resetObj, modifyData);
                   //重新設定按鈕
                   resetObj.clickBtn.unbind("click").click(function(){
                     insertAPIContentDialog(apiCategoryObj, modifyData, resetObj)
@@ -433,7 +439,7 @@ function getInsertAreaInfo(){
 		// 參數說明
 		var description = $(this).find("input:text").eq(2).val();
 		// 是否必傳
-		var required = ($(this).find("[name=isSend]:checked").val()) ? 1 : 0;
+		var required = (parseInt($(this).find("[name=isSend]:checked").val())) ? 1 : 0;
 		if(name != undefined && type != undefined && description != undefined && $.trim(name) != "" && $.trim(type) != "" && $.trim(description) != ""){
 			var tmpObj = {
 				name:name,
@@ -489,7 +495,8 @@ function restSendDataObj(sendObj){
 	tmpObj.responseExplanation = sendObj.ls_response_explanation;
 	tmpObj.uid = sendObj.api_method_UID;
 	tmpObj.url = sendObj.api_method_url;
-	tmpObj.httpMethod = sendObj.httpMethod;
+	tmpObj.httpMethodName = sendObj.httpMethodName;
+	tmpObj.api_sf_name = sendObj.api_sf_name;
 	return tmpObj;
 }
 
@@ -501,9 +508,15 @@ function putAPIListTextForInsert(apiCategoryObj, insertData, insertArea){
 		getStyle(option, function(pagListStyle){
 		var pagListStyleObj = $.parseHTML(pagListStyle);
 
-		$(pagListStyleObj).find(".list-items").eq(0).html(insertData.name);
+		var apiURLText = $("<a>").prop("href","#").html(insertData.name).click(function(){
+			// 預覽
+			viewDialog(insertData);
+			return false;
+		});
+		// API名稱
+		$(pagListStyleObj).find(".list-items").eq(0).html(apiURLText);
 		// 放入請求方法
-		var httpMethod = $("<div>").addClass("http-"+insertData.httpMethod).html(insertData.httpMethod);
+		var httpMethod = $("<div>").addClass("http-"+insertData.httpMethodName).html(insertData.httpMethodName);
 		$(pagListStyleObj).find(".list-items").eq(1).html(httpMethod);
 		$(pagListStyleObj).find(".list-items").eq(2).html(insertData.description);
 
@@ -512,7 +525,7 @@ function putAPIListTextForInsert(apiCategoryObj, insertData, insertArea){
 		  var modifyObj = {
 		    name: $(pagListStyleObj).find(".list-items").eq(0),
 		    description: $(pagListStyleObj).find(".list-items").eq(2),
-		    httpMethod: $(pagListStyleObj).find(".list-items").eq(1),
+		    httpMethodName: $(pagListStyleObj).find(".list-items").eq(1),
 		    clickBtn: $(this)
 		  }
 		  insertAPIContentDialog(apiCategoryObj, insertData, modifyObj);
@@ -529,11 +542,18 @@ function putAPIListTextForInsert(apiCategoryObj, insertData, insertArea){
 
 //修改後，依據修改資料放入對應欄位
 function putAPIListTextForModify(modifyObj, modifyData){
-	console.log(modifyData);
+	// console.log(modifyData);
   $.each(modifyObj, function(index, content){
-  	if(index == "httpMethod"){
+  	if(index == "httpMethodName"){
   		var httpMethod = $("<div>").addClass("http-"+modifyData[index]).text(modifyData[index]);
-  		content.empty().html(httpMethod);
+  		content.html(httpMethod);
+  	}else if(index == "name"){
+  		var apiURLText = $("<a>").prop("href","#").html(modifyData[index]).click(function(){
+			// 預覽
+			viewDialog(modifyData);
+			return false;
+		});
+		content.html(apiURLText);
   	}else{
     	content.text(modifyData[index]);
 	}
