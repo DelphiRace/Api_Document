@@ -130,7 +130,7 @@ function addApiCategoryDialog(contentObj, modifyObj){
                   putTextForInsert(sendObj);
                 }else{
                   // 修改後畫面上跟著動
-                  putTextForModify(inptObj, modifyObj, sendObj);
+                  putTextForModify(modifyObj, sendObj);
                   //重新設定按鈕
                   modifyObj.clickBtn.unbind("click").click(function(){
                     addApiCategoryDialog(sendObj, modifyObj);
@@ -244,9 +244,22 @@ function putTextForInsert(insertData){
 }
 
 //修改後，依據修改資料放入對應欄位
-function putTextForModify(inptObj, modifyObj, modifyData){
-  $.each(inptObj,function(index,content){
-    modifyObj[index].text(modifyData[index]);
+function putTextForModify(modifyObj, modifyData){
+  $.each(modifyObj,function(index,content){
+    if(index == "name"){
+      // 製作錨點動畫
+      var CategoryLink = $("<a>").prop("href","#").text(modifyData.name).click(function(){
+        var scrollTop = $(putAreaItem[modifyData.uid].area).offset().top;
+        $('html,body').animate({
+          scrollTop: scrollTop
+        }, 800);
+        return false;
+      });
+      content.html(CategoryLink);
+      $(putAreaItem[modifyData.uid].area).find(".item-title").find("h3").text(modifyData.name);
+    }else{
+      content.text(modifyData[index]);
+    }
   });
 }
 

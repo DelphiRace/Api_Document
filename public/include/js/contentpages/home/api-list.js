@@ -319,7 +319,17 @@ function putParameterArea(putObj, putLabel, contentObj){
 		$(parameterStyleObj).find(".control-label").eq(0).text(putLabel);
 		var parameterAreaStyle = $(parameterStyleObj).find(".parameterArea").html();
 		$(parameterStyleObj).find(".fa-plus-square-o").click(function(){
+			var thisTotalHeight = $(parameterStyleObj).find(".parameterArea")[0].clientHeight;
 			addParameterArea(parameterStyleObj, parameterAreaStyle);
+			// 錨點移動
+			var topHeight = 0;
+			for(var i = 0; i<5; i++){
+				topHeight += $("#insertAPIContentDialog").find(".modal-body").find(".list-items").eq(i)[0].clientHeight;
+			}
+			var scrollTop = topHeight + thisTotalHeight;
+			$('#insertAPIContentDialog').animate({
+					scrollTop: scrollTop
+			}, 800);
 		});
 
 		$(parameterStyleObj).find(".fa-trash").click(function(){
@@ -352,8 +362,18 @@ function putResponseExplanationArea(putObj, putLabel, contentObj){
 		$(parameterStyleObj).find(".control-label").eq(0).text(putLabel);
 		var parameterAreaStyle = $(parameterStyleObj).find(".responseExplanationArea").html();
 		$(parameterStyleObj).find(".fa-plus-square-o").click(function(){
-			addResponseExplanationArea(parameterStyleObj, parameterAreaStyle);
+			// 錨點移動
+			var newREInput = addResponseExplanationArea(parameterStyleObj, parameterAreaStyle);
+			if(newREInput){
+				// 製作錨點動畫
+				var thisHeight = $(newREInput).eq(1).height();
+				var scrollTop = $("#insertAPIContentDialog").find(".modal-body").height() - thisHeight;
+				$('#insertAPIContentDialog').animate({
+					scrollTop: scrollTop
+				}, 800);
+			}
 		});
+
 
 		$(parameterStyleObj).find(".fa-trash").click(function(){
 			$(this).parents(".row")[0].remove();
@@ -370,6 +390,9 @@ function putResponseExplanationArea(putObj, putLabel, contentObj){
 
 // 新增變數輸入區域
 function addParameterArea(putObj, parameterAreaStyle, contentObj){
+	// 取得唯一ID
+	var idGen =new Generator();
+	var onlyISSendID = idGen.getId();
 	// console.log(putObj, contentObj);
 	if(contentObj == undefined){ //新增
 		// parameterArea
@@ -377,22 +400,34 @@ function addParameterArea(putObj, parameterAreaStyle, contentObj){
 		$(parameterAreaStyleObj).find(".fa-trash").click(function(){
 			$(this).parents(".row")[0].remove();
 		});
+		$(parameterAreaStyleObj).find(".fa-angle-up").click(function(){
+			// 錨點移動
+			var topHeight = 0;
+			for(var i = 0; i<5; i++){
+				topHeight += $("#insertAPIContentDialog").find(".modal-body").find(".list-items").eq(i)[0].clientHeight;
+			}
+			var scrollTop = topHeight + 56;
+			$('#insertAPIContentDialog').animate({
+					scrollTop: scrollTop
+			}, 800);
+		});
+		var radioSendFalse = $(parameterAreaStyleObj).find("input:radio").eq(0).attr("name","isSend"+onlyISSendID);
+		var radioSendTrue = $(parameterAreaStyleObj).find("input:radio").eq(1).attr("name","isSend"+onlyISSendID);
 		$(parameterAreaStyleObj).appendTo( $(putObj).find(".parameterArea") );
 	}else{ //修改
 		if(contentObj.parameter != undefined){
-			// 取得唯一ID
-			var idGen =new Generator();
 			$.each(contentObj.parameter,function(index, content){
-				var onlyISSendID = idGen.getId();
 				var parameterAreaStyleObj = $.parseHTML(parameterAreaStyle);	
 				// key值
 				$(parameterAreaStyleObj).find("input:text").eq(0).val(content.name);
 				$(parameterAreaStyleObj).find("input:text").eq(1).val(content.type);
 				$(parameterAreaStyleObj).find("input:text").eq(2).val(content.description);
+				var radioSendFalse = $(parameterAreaStyleObj).find("input:radio").eq(0).attr("name","isSend"+onlyISSendID);
+				var radioSendTrue = $(parameterAreaStyleObj).find("input:radio").eq(1).attr("name","isSend"+onlyISSendID);
 				if(content.required == 1 || content.required == "1"){
-					$(parameterAreaStyleObj).find("input:radio").eq(0).attr("name","isSend"+onlyISSendID).attr('checked', true).parent().addClass("active");
+					radioSendFalse.attr('checked', true).parent().addClass("active");
 				}else{
-					$(parameterAreaStyleObj).find("input:radio").eq(1).attr("name","isSend"+onlyISSendID).attr('checked', true).parent().addClass("active");
+					radioSendTrue.attr('checked', true).parent().addClass("active");
 
 				}
 				// console.log(idGen.getId(),$(parameterAreaStyleObj).find("input:radio"));
@@ -401,6 +436,18 @@ function addParameterArea(putObj, parameterAreaStyle, contentObj){
 				// console.log($.uniqueId($(parameterAreaStyleObj)));
 				$(parameterAreaStyleObj).find(".fa-trash").click(function(){
 					$(this).parents(".row")[0].remove();
+				});
+
+				$(parameterAreaStyleObj).find(".fa-angle-up").click(function(){
+					// 錨點移動
+					var topHeight = 0;
+					for(var i = 0; i<5; i++){
+						topHeight += $("#insertAPIContentDialog").find(".modal-body").find(".list-items").eq(i)[0].clientHeight;
+					}
+					var scrollTop = topHeight + 56;
+					$('#insertAPIContentDialog').animate({
+							scrollTop: scrollTop
+					}, 800);
 				});
 				$(parameterAreaStyleObj).appendTo( $(putObj).find(".parameterArea") );
 			});
@@ -413,10 +460,20 @@ function addResponseExplanationArea(putObj, parameterAreaStyle, contentObj){
 	if(contentObj == undefined){ //新增
 		// ResponseExplanationArea
 		var parameterAreaStyleObj = $.parseHTML(parameterAreaStyle);	
+		// 刪除項目按鈕
 		$(parameterAreaStyleObj).find(".fa-trash").click(function(){
 			$(this).parents(".row")[0].remove();
 		});
-		$(parameterAreaStyleObj).appendTo( $(putObj).find(".responseExplanationArea") );
+		$(parameterAreaStyleObj).find(".fa-angle-up").click(function(){
+			var areaHeight = $("#insertAPIContentDialog").find("#ls_response_explanation").height();
+			var totalHeight = $("#insertAPIContentDialog").find(".modal-body").height();
+			var scrollTop = totalHeight - areaHeight;
+			$('#insertAPIContentDialog').animate({
+					scrollTop: scrollTop
+			}, 800);
+		});
+		$(parameterAreaStyleObj).appendTo( $(putObj).find(".responseExplanationArea") ).offset();
+		return parameterAreaStyleObj;
 	}else{ //修改
 		if(contentObj.responseExplanation != undefined){
 			$.each(contentObj.responseExplanation,function(index, content){
@@ -430,9 +487,19 @@ function addResponseExplanationArea(putObj, parameterAreaStyle, contentObj){
 				$(parameterAreaStyleObj).find(".fa-trash").click(function(){
 					$(this).parents(".row")[0].remove();
 				});
+
+				$(parameterAreaStyleObj).find(".fa-angle-up").click(function(){
+					var areaHeight = $("#insertAPIContentDialog").find("#ls_response_explanation").height();
+					var totalHeight = $("#insertAPIContentDialog").find(".modal-body").height();
+					var scrollTop = totalHeight - areaHeight;
+					$('#insertAPIContentDialog').animate({
+							scrollTop: scrollTop
+					}, 800);
+				});
 				$(parameterAreaStyleObj).appendTo( $(putObj).find(".responseExplanationArea") );
 			});
 		}
+		return false;
 	}	
 }
 
