@@ -32,6 +32,7 @@ function getApiCategoryList(){
             $('html,body').animate({
               scrollTop: scrollTop
             }, 800);
+            return false;
           });
           $(pagListStyleObj).find(".list-items").eq(0).html(CategoryLink);
           $(pagListStyleObj).find(".list-items").eq(1).html(content.description);
