@@ -29,6 +29,13 @@ function viewDialog(data){
 					putContent( contentArea, "此功能暫不開放" );
 		    	}
 			});
+			$("#viewDialog").scroll(function() {
+				if ( $(this).scrollTop() > 100){
+					$('#dialogGotop').fadeIn("fast");
+				} else {
+					$('#dialogGotop').stop().fadeOut("fast");
+				}
+			});
         },        
     });
 }

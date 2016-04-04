@@ -6,6 +6,11 @@ $(function(){
             scrollTop:0
         },800);
     });
+    $("#dialogGotop").click(function(){
+      $("#viewDialog").animate({
+          scrollTop:0
+      },800);
+  	});
     $(window).scroll(function() {
         if ( $(this).scrollTop() > 100){
             $('#gotop').fadeIn("fast");
