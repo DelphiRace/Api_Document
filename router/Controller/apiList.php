@@ -24,7 +24,7 @@ class apiListController
             t5.response_content,
             t4.uid as responseExplanationUID, t4.name as responseExplanationKey, t4.type as responseExplanationType, t4.description as responseExplanationDescription, 
             t6.uid as parameterUID, t6.name as parameterKey, t6.type as parameterType, t6.description as parameterDescription, t6.required as parameterRequired, 
-            t5.response_content, t5.original from api_method t1 ";
+            t5.response_content from api_method t1 ";
             //API請求方法
             $strSQL .= "left join api_http_method t2 on t1.http_method = t2.uid ";
             //API支援格式
@@ -62,13 +62,12 @@ class apiListController
                         $tmpArr[$content['uid']]['api_sf'] = $content['api_sf'];
                         $tmpArr[$content['uid']]['api_sf_name'] = $content['api_sf_name'];
                         $tmpArr[$content['uid']]['httpMethodName'] = $content['httpMethodName'];
-                        $tmpArr[$content['uid']]['response_content'] = $content['response_content'];
+                        $tmpArr[$content['uid']]['response_content'] = htmlspecialchars_decode($content['response_content']);
                         $tmpArr[$content['uid']]['category'] = $content['category'];
                         $tmpArr[$content['uid']]['description'] = $content['description'];
                         $tmpArr[$content['uid']]['http_method'] = $content['http_method'];
                         $tmpArr[$content['uid']]['importantInfo'] = $content['importantInfo'];
                         $tmpArr[$content['uid']]['name'] = $content['name'];
-                        $tmpArr[$content['uid']]['original'] = $content['original'];
                         $tmpArr[$content['uid']]['uid'] = $content['uid'];
                         $tmpArr[$content['uid']]['url'] = $content['url'];
                     }
@@ -179,12 +178,12 @@ class apiListController
 
                 // ls_response_example
                 $ls_response_example_response_content = ($_POST["ls_response_example_response_content"]) ? "'".$_POST["ls_response_example_response_content"]."'" : "NULL";
-                $original_content = $ls_response_example_response_content;
+                // $original_content = $ls_response_example_response_content;
+                
+                // $ls_response_example_response_content = str_replace("\n", "<br>", $ls_response_example_response_content);
 
-                $ls_response_example_response_content = str_replace("\n", "<br>", $ls_response_example_response_content);
-
-                $strSQL = "insert into ls_response_example(api_uid,response_content, original) ";
-                $strSQL .= "values(".$NewID.",".$ls_response_example_response_content.", ".$original_content.");";
+                $strSQL = "insert into ls_response_example(api_uid,response_content) ";
+                $strSQL .= "values(".$NewID.",".$ls_response_example_response_content.");";
 
                 //新增狀態
                 $lsResponseExampleStatus = false;
@@ -359,11 +358,11 @@ class apiListController
 
                 // ls_response_example
                 $ls_response_example_response_content = ($_POST["ls_response_example_response_content"]) ? "'".$_POST["ls_response_example_response_content"]."'" : "NULL";
-                $original_content = $ls_response_example_response_content;
+                // $original_content = $ls_response_example_response_content;
 
-                $ls_response_example_response_content = str_replace("\n", "<br>", $ls_response_example_response_content);
+                // $ls_response_example_response_content = str_replace("\n", "<br>", $ls_response_example_response_content);
 
-                $strSQL = "update ls_response_example set response_content=".$ls_response_example_response_content.", original=".$original_content." ";
+                $strSQL = "update ls_response_example set response_content=".$ls_response_example_response_content." ";
                 $strSQL .= "where api_uid = ".$api_uid.";";
 
                 //新增狀態

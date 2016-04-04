@@ -36,6 +36,7 @@ function createAPIList(apiData){
 
 								$(listStyleObj).addClass("dataContent");
 								var apiURLText = $("<a>").prop("href","#").html(dataContent.name).click(function(){
+
 									// 預覽
 									viewDialog(dataContent);
 									return false;
@@ -172,7 +173,7 @@ function insertAPIContentDialog(apiCategoryObj, contentObj, resetObj){
       	name: "返回值範例",
       	type: "textarea",
       	className: "textarea-height-200",
-      	value: (contentObj == undefined) ? "":contentObj.original
+      	value: (contentObj == undefined) ? "":contentObj.response_content
       },
       ls_response_explanation:{
       	name: "返回值說明",
@@ -241,7 +242,6 @@ function insertAPIContentDialog(apiCategoryObj, contentObj, resetObj){
               // 放入請求方法
               sendObj['httpMethodName'] = $("[name=api_method_http_method]:checked").parent().find(".label-description").text();
               sendObj['api_sf_name'] = $("[name=ls_support_format_api_sf]:checked").parent().find(".label-description").text();
-
               var apiMethod = (contentObj == undefined) ? "insertApiList":"modifyApiList";
 
               $.post(listApi + apiMethod, sendObj, function(rs){
@@ -380,15 +380,25 @@ function addParameterArea(putObj, parameterAreaStyle, contentObj){
 		$(parameterAreaStyleObj).appendTo( $(putObj).find(".parameterArea") );
 	}else{ //修改
 		if(contentObj.parameter != undefined){
+			// 取得唯一ID
+			var idGen =new Generator();
 			$.each(contentObj.parameter,function(index, content){
+				var onlyISSendID = idGen.getId();
 				var parameterAreaStyleObj = $.parseHTML(parameterAreaStyle);	
 				// key值
 				$(parameterAreaStyleObj).find("input:text").eq(0).val(content.name);
 				$(parameterAreaStyleObj).find("input:text").eq(1).val(content.type);
 				$(parameterAreaStyleObj).find("input:text").eq(2).val(content.description);
-				$(parameterAreaStyleObj).find("input[name=isSend][value=" + content.required + "]").attr('checked', true);
-				$(parameterAreaStyleObj).find("input[name=isSend][value=" + content.required + "]").parent().addClass("active");
+				if(content.required == 1 || content.required == "1"){
+					$(parameterAreaStyleObj).find("input:radio").eq(0).attr("name","isSend"+onlyISSendID).attr('checked', true).parent().addClass("active");
+				}else{
+					$(parameterAreaStyleObj).find("input:radio").eq(1).attr("name","isSend"+onlyISSendID).attr('checked', true).parent().addClass("active");
 
+				}
+				// console.log(idGen.getId(),$(parameterAreaStyleObj).find("input:radio"));
+				// $(parameterAreaStyleObj).find("input[name=isSend][value=" + content.required + "]").attr('checked', true);
+				// $(parameterAreaStyleObj).find("input[name=isSend][value=" + content.required + "]").parent().addClass("active");
+				// console.log($.uniqueId($(parameterAreaStyleObj)));
 				$(parameterAreaStyleObj).find(".fa-trash").click(function(){
 					$(this).parents(".row")[0].remove();
 				});
@@ -439,7 +449,7 @@ function getInsertAreaInfo(){
 		// 參數說明
 		var description = $(this).find("input:text").eq(2).val();
 		// 是否必傳
-		var required = (parseInt($(this).find("[name=isSend]:checked").val())) ? 1 : 0;
+		var required = (parseInt($(this).find("input:radio:checked").val())) ? 1 : 0;
 		if(name != undefined && type != undefined && description != undefined && $.trim(name) != "" && $.trim(type) != "" && $.trim(description) != ""){
 			var tmpObj = {
 				name:name,
@@ -490,7 +500,8 @@ function restSendDataObj(sendObj){
 	tmpObj.http_method = sendObj.api_method_http_method;
 	tmpObj.importantInfo = sendObj.ls_important_info_content;
 	tmpObj.name = sendObj.api_method_name;
-	tmpObj.original = sendObj.ls_response_example_response_content;
+	// tmpObj.original = sendObj.ls_response_example_response_content;
+	tmpObj.response_content = sendObj.ls_response_example_response_content;
 	tmpObj.parameter = sendObj.ls_parameter;
 	tmpObj.responseExplanation = sendObj.ls_response_explanation;
 	tmpObj.uid = sendObj.api_method_UID;
@@ -559,3 +570,11 @@ function putAPIListTextForModify(modifyObj, modifyData){
 	}
   });
 }
+
+function Generator() {};
+
+Generator.prototype.rand =  Math.floor(Math.random() * 26) + Date.now();
+
+Generator.prototype.getId = function() {
+	return this.rand++;
+};
