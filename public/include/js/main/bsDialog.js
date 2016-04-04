@@ -27,15 +27,25 @@
     function BsDialog($selector, option, action){
         var self = this;
         this.bsDialogShow = function(){
+            // $selector.modal('show');
+            // $selector.on('show.bs.modal', function () {
+            //         alert('The modal is about to be shown.');
+            // });
             $selector.modal({
                 backdrop: 'static',
+                show: 'show'
             }).on("shown.bs.modal",function(event){
                 // console.log(event);
-                var lastBackdrop = $("body").find(".modal-backdrop").last();
-                var last2ItemBackdrop = $("body").find(".modal-backdrop").eq(-2);
-                var last2ItemBackdropZindex = parseInt(last2ItemBackdrop.css("z-index"));
-                $selector.css("z-index",last2ItemBackdropZindex+12)
-                lastBackdrop.css("z-index",last2ItemBackdropZindex + 10);
+                // var lastBackdrop = $("body").find(".modal-backdrop").last();
+                // var last2ItemBackdrop = $("body").find(".modal-backdrop").eq(-2);
+                // var last2ItemBackdropZindex = parseInt(last2ItemBackdrop.css("z-index"));
+                // $selector.css("z-index",last2ItemBackdropZindex+12)
+                // lastBackdrop.css("z-index",last2ItemBackdropZindex + 10);
+                // console.log($(".modal.fade.in").eq(-2).);
+                $(".modal.fade.in").eq(-2).fadeOut();
+            }).on("hidden.bs.modal",function(event){
+                console.log($(".modal.fade.in"));
+                $(".modal.fade.in").eq(-1).fadeIn();
             });
 
         };
@@ -49,7 +59,7 @@
             if($selector.find(".modal-content").length){
                 return;
             }
-            $selector.addClass("modal fade");
+            $selector.addClass("modal fade").attr("aria-hidden","true");
             var originContent = $selector.html();
             $selector.empty();
             var bsModal = $("<div>").addClass("modal-dialog");
