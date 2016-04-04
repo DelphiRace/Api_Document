@@ -155,6 +155,7 @@ function insertAPIContentDialog(apiCategoryObj, contentObj, resetObj){
       	call: function(listStyleObj, inputID, contentObj, modalBody, inputValName){
       		// parameter-input
         	putParameterArea(listStyleObj, inputValName, contentObj);
+        	// console.log(contentObj);
         }
       },
       ls_important_info_content:{
@@ -363,7 +364,7 @@ function putResponseExplanationArea(putObj, putLabel, contentObj){
 
 // 新增變數輸入區域
 function addParameterArea(putObj, parameterAreaStyle, contentObj){
-	// console.log(contentObj);
+	// console.log(putObj, contentObj);
 	if(contentObj == undefined){ //新增
 		// parameterArea
 		var parameterAreaStyleObj = $.parseHTML(parameterAreaStyle);	
@@ -376,10 +377,11 @@ function addParameterArea(putObj, parameterAreaStyle, contentObj){
 			$.each(contentObj.parameter,function(index, content){
 				var parameterAreaStyleObj = $.parseHTML(parameterAreaStyle);	
 				// key值
-				$(parameterAreaStyleObj).find("input:text").eq(0).val(content.key);
+				$(parameterAreaStyleObj).find("input:text").eq(0).val(content.name);
 				$(parameterAreaStyleObj).find("input:text").eq(1).val(content.type);
 				$(parameterAreaStyleObj).find("input:text").eq(2).val(content.description);
-
+				$(parameterAreaStyleObj).find("input[name=isSend][value=" + content.required + "]").attr('checked', true);
+				$(parameterAreaStyleObj).find("input[name=isSend][value=" + content.required + "]").parent().addClass("active");
 
 				$(parameterAreaStyleObj).find(".fa-trash").click(function(){
 					$(this).parents(".row")[0].remove();
@@ -404,7 +406,7 @@ function addResponseExplanationArea(putObj, parameterAreaStyle, contentObj){
 			$.each(contentObj.responseExplanation,function(index, content){
 				var parameterAreaStyleObj = $.parseHTML(parameterAreaStyle);	
 				// key值
-				$(parameterAreaStyleObj).find("input:text").eq(0).val(content.key);
+				$(parameterAreaStyleObj).find("input:text").eq(0).val(content.name);
 				$(parameterAreaStyleObj).find("input:text").eq(1).val(content.type);
 				$(parameterAreaStyleObj).find("input:text").eq(2).val(content.description);
 
@@ -432,7 +434,7 @@ function getInsertAreaInfo(){
 		var description = $(this).find("input:text").eq(2).val();
 		// 是否必傳
 		var required = ($(this).find("[name=isSend]:checked").val()) ? 1 : 0;
-		if(name != undefined && type != undefined && description != undefined){
+		if(name != undefined && type != undefined && description != undefined && $.trim(name) != "" && $.trim(type) != "" && $.trim(description) != ""){
 			var tmpObj = {
 				name:name,
 				type:type,
@@ -454,7 +456,7 @@ function getInsertAreaInfo(){
 		var type = $(this).find("input:text").eq(1).val();
 		// 參數說明
 		var description = $(this).find("input:text").eq(2).val();
-		if(name != undefined && type != undefined && description != undefined){
+		if(name != undefined && type != undefined && description != undefined && $.trim(name) != "" && $.trim(type) != "" && $.trim(description) != ""){
 			var tmpObj = {
 				name:name,
 				type:type,
@@ -474,7 +476,7 @@ function getInsertAreaInfo(){
 
 // 處理新增後的資料物件
 function restSendDataObj(sendObj){
-	console.log(sendObj);
+	// console.log(sendObj);
 	var tmpObj = {};
 	tmpObj.api_sf = sendObj.ls_support_format_api_sf;
 	tmpObj.category = sendObj.api_method_Category;

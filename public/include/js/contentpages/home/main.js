@@ -203,7 +203,15 @@ function putTextForInsert(insertData){
   getStyle(option, function(pagListStyle){
     var pagListStyleObj = $.parseHTML(pagListStyle);
 
-    $(pagListStyleObj).find(".list-items").eq(0).html(insertData.name);
+    // 製作錨點動畫
+    var CategoryLink = $("<a>").prop("href","#").text(insertData.name).click(function(){
+      var scrollTop = $(putAreaItem[insertData.uid].area).offset().top;
+      $('html,body').animate({
+        scrollTop: scrollTop
+      }, 800);
+      return false;
+    });
+    $(pagListStyleObj).find(".list-items").eq(0).html(CategoryLink);
     $(pagListStyleObj).find(".list-items").eq(1).html(insertData.description);
 
     //修改按鈕

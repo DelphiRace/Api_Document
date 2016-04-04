@@ -43,6 +43,8 @@ class apiListController
             $strSQL .= "where 1 ";
             // 指定單筆
             $strSQL .= $listCondition;
+            $strSQL .= "order by t1.uid asc ";
+
             $data = $SysClass->QueryData($strSQL);
 
             $action = [];
@@ -77,7 +79,7 @@ class apiListController
                             $tmpArr[$content['uid']]['parameter'] = [];
                         }
                         $reArr = [];
-                        $reArr['key'] = $content["parameterKey"];
+                        $reArr['name'] = $content["parameterKey"];
                         $reArr['type'] = $content["parameterType"];
                         $reArr['description'] = $content["parameterDescription"];
                         $reArr['required'] = $content["parameterRequired"];
@@ -92,7 +94,7 @@ class apiListController
                             $tmpArr[$content['uid']]['responseExplanation'] = [];
                         }
                         $reArr = [];
-                        $reArr['key'] = $content["responseExplanationKey"];
+                        $reArr['name'] = $content["responseExplanationKey"];
                         $reArr['type'] = $content["responseExplanationType"];
                         $reArr['description'] = $content["responseExplanationDescription"];
                         $thisLength = count($tmpArr[$content['uid']]['responseExplanation']);
