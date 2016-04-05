@@ -26,11 +26,9 @@
 
     function BsDialog($selector, option, action){
         var self = this;
-        this.bsDialogShow = function(){
-            // $selector.modal('show');
-            // $selector.on('show.bs.modal', function () {
-            //         alert('The modal is about to be shown.');
-            // });
+        this.bsDialogShow = function(){     
+            var nowModalIn = $(".modal.fade.in").length + 1;
+            // $(".modal.fade.in").eq(-2).fadeOut(300);
             $selector.modal({
                 backdrop: 'static',
                 show: 'show'
@@ -42,16 +40,22 @@
                 // $selector.css("z-index",last2ItemBackdropZindex+12)
                 // lastBackdrop.css("z-index",last2ItemBackdropZindex + 10);
                 // console.log($(".modal.fade.in").eq(-2).);
-                $(".modal.fade.in").eq(-2).fadeOut();
+                // option["start"]();
             }).on("hidden.bs.modal",function(event){
-                console.log($(".modal.fade.in"));
-                $(".modal.fade.in").eq(-1).fadeIn();
+                // console.log($(".modal.fade.in"));
+                $(".modal.fade.in").eq(-1).fadeIn(300);
+                $selector.off("showBSDialog");
             });
-
+            
+            if(nowModalIn > 1){
+                $(".modal.fade.in").last().fadeOut(300);
+            }
+            
         };
 
         this.bsDialogClose = function(){
             $selector.modal("hide");
+            $selector.off("showBSDialog");
         };
 
         this.start = function(){
@@ -59,6 +63,7 @@
             if($selector.find(".modal-content").length){
                 return;
             }
+            
             $selector.addClass("modal fade").attr("aria-hidden","true");
             var originContent = $selector.html();
             $selector.empty();
@@ -83,6 +88,9 @@
                 $("<button>").addClass("close")
                 .attr("data-dismiss","modal")
                 .html("&times;")
+                .click(function(){
+                    $selector.off("showBSDialog");
+                })
                 .appendTo(bsModalHeader);
             }
             // title

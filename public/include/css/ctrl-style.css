@@ -492,3 +492,8 @@ a:hover{
     cursor: pointer;
     z-index: 99999;
 }
+
+.categoryTag:hover{
+	background-color: #f0f0f0;
+	/*color: #fff;*/
+}
