@@ -497,3 +497,7 @@ a:hover{
 	background-color: #f0f0f0;
 	/*color: #fff;*/
 }
+
+.viewContent{
+	padding: 20px;
+}
