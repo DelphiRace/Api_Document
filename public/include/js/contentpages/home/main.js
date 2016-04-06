@@ -23,6 +23,7 @@ $(function(){
 });
 
 function getApiCategoryList(){
+  loader($("#mainArea"));
   $.getJSON(CategoryApi + "GetList").done(function(rs){
     $("#mainArea").empty();
     if(rs.status){

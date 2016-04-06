@@ -21,8 +21,10 @@ $(function(){
 });
 
 function getListContent(){
+	loader($("#mainListArea"));
 	$.getJSON(CategoryApi + "GetList").done(function(rs){
 		if(rs.status){
+			$("#mainListArea").empty();
 			var titleDiv = $("<div>").addClass("hero-unit");
 			$("<h3>").addClass("page-header").text("API類別").appendTo(titleDiv);
 			titleDiv.appendTo("#mainListArea");
