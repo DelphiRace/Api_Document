@@ -27,7 +27,11 @@
         }else{
             try{
                 //呼叫預設的ACTION
-                $methodClass -> {$methodConfig["action"]."Action"}();
+                if(method_exists($methodClass,$methodConfig["action"]."Action")){
+                    $methodClass -> {$methodConfig["action"]."Action"}();
+                }else{
+                    $methodClass -> indexAction();
+                }
             }catch(Exception $error){
                 echo "Default Action is not setting!";
                 exit();
